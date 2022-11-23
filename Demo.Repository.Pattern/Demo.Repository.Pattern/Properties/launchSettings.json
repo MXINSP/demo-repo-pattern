@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Demo.Repository.Pattern": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

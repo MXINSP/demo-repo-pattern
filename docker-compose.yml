@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  #demo.repository.pattern:
+  #  image: ${DOCKER_REGISTRY-}demorepositorypattern
+  #  build:
+  #    context: .
+  #    dockerfile: Demo.Repository.Pattern/Dockerfile
+
+  postgres:
+    image: postgres
+    hostname: postgres
+    container_name: postgres
+    ports:
+        - "5432:5432"
+    restart: always
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: Demo.01
+        POSTGRES_DB: postgres
+ 
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      DMINER_DESIGN: galkaev
+
