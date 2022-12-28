@@ -148,6 +148,7 @@ namespace Demo.Repository.Pattern.Data
 
         public virtual async Task<List<TEntity>> FindAsync(BaseSpecification<TEntity> specification)
         {
+            ArgumentNullException.ThrowIfNull(specification, nameof(specification));
             return await this.DbSet.Where(specification.ToExpression()).ToListAsync();
         }
     }
