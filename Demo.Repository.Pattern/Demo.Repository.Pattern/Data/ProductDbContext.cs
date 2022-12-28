@@ -37,6 +37,8 @@ namespace Demo.Repository.Pattern.Data
              * 2. Using one context type
              *******************************************************************************************************/
 
+            ArgumentNullException.ThrowIfNull(optionsBuilder, nameof(optionsBuilder));
+
             // base.OnConfiguring(optionsBuilder);
             if (!optionsBuilder.IsConfigured)
             {
