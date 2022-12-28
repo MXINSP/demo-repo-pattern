@@ -1,18 +1,14 @@
 ﻿using Demo.Repository.Pattern.Domain;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Demo.Repository.Pattern.Data
 {
     public class ProductDbContext : DbContext
     {
-        public ProductDbContext() { }
+        public ProductDbContext()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductDbContext"/> class.
@@ -48,9 +44,10 @@ namespace Demo.Repository.Pattern.Data
                     "Server=(localdb)\\mssqllocaldb;Database=DemoEfCoreWithPostgres;Trusted_Connection=True;MultipleActiveResultSets=true",
                     option => { option.EnableRetryOnFailure(); }); */
 
-                optionsBuilder.UseNpgsql("Host=localhost;Database=postgres;Username=postgres;Password=Demo.01", builder => builder.EnableRetryOnFailure());
-                optionsBuilder.EnableSensitiveDataLogging();
-                optionsBuilder.LogTo(Console.WriteLine);
+                _ = optionsBuilder.UseNpgsql("Host=localhost;Database=postgres;Username=appuser;Password=Demo.01",
+                    builder => builder.EnableRetryOnFailure());
+                _ = optionsBuilder.EnableSensitiveDataLogging();
+                _ = optionsBuilder.LogTo(Console.WriteLine);
             }
         }
 
@@ -61,18 +58,32 @@ namespace Demo.Repository.Pattern.Data
         /// The model builder.
         /// </param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {            
+        {
             /*modelBuilder.Entity<Product>().Property<DateTime?>(p => p.CreatedOn).HasColumnType("timestamp without time zone");
             modelBuilder.Entity<Product>().Property<DateTime?>(p => p.UpdatedOn).HasColumnType("timestamp without time zone"); */
 
-            modelBuilder.Entity<Product>().HasData(
+            _ = modelBuilder.Entity<Product>().HasData(
                 new { Id = 1, Name = "Product One", UnitPrice = 1.5, CreatedOn = DateTime.UtcNow },
                 new { Id = 2, Name = "Product Two", UnitPrice = 2.5, CreatedOn = DateTime.UtcNow },
-                new { Id = 3, Name = "Old Product", UnitPrice = 3.55, CreatedOn = DateTime.UtcNow.AddDays(-150), UpdatedOn = DateTime.UtcNow },
-                new { Id = 4, Name = "Expensive Product", UnitPrice = 150.99, CreatedOn = DateTime.UtcNow, UpdatedOn = DateTime.UtcNow }
+                new
+                {
+                    Id = 3,
+                    Name = "Old Product",
+                    UnitPrice = 3.55,
+                    CreatedOn = DateTime.UtcNow.AddDays(-150),
+                    UpdatedOn = DateTime.UtcNow
+                },
+                new
+                {
+                    Id = 4,
+                    Name = "Expensive Product",
+                    UnitPrice = 150.99,
+                    CreatedOn = DateTime.UtcNow,
+                    UpdatedOn = DateTime.UtcNow
+                }
             );
 
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            _ = modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(modelBuilder);
         }
     }

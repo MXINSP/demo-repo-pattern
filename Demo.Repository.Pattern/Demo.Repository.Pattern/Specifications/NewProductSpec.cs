@@ -7,7 +7,7 @@ namespace Demo.Repository.Pattern.Specifications
     {
         public override Expression<Func<Product, bool>> ToExpression()
         {
-            return product => product.CreatedOn > DateTime.Today.AddDays(-7);
+            return product => product.CreatedOn > DateTime.Today.AddDays(-14);
         }
     }
 }

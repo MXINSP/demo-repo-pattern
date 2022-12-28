@@ -8,15 +8,15 @@ namespace Demo.Repository.Pattern.Data.Configurations
     {
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
-            var defaultBy = "System";
+            string defaultBy = "System";
 
             // *.HasDefaultValueSql(Database.IsSqlite() ? "datetime('now', 'utc')" : "getutcdate()")
 
-            builder.Property(p => p.CreatedOn).ValueGeneratedOnAdd().HasDefaultValueSql("now()");
-            builder.Property(p => p.CreatedBy).ValueGeneratedOnAdd().HasDefaultValue(defaultBy);
+            _ = builder?.Property(p => p.CreatedOn).ValueGeneratedOnAdd().HasDefaultValueSql("now()");
+            _ = builder?.Property(p => p.CreatedBy).ValueGeneratedOnAdd().HasDefaultValue(defaultBy);
 
-            builder.Property(p => p.UpdatedOn).ValueGeneratedOnUpdate().HasDefaultValueSql("now()");
-            builder.Property(p => p.UpdatedBy).ValueGeneratedOnUpdate().HasDefaultValue(defaultBy);
+            _ = builder?.Property(p => p.UpdatedOn).ValueGeneratedOnUpdate().HasDefaultValueSql("now()");
+            _ = builder?.Property(p => p.UpdatedBy).ValueGeneratedOnUpdate().HasDefaultValue(defaultBy);
         }
     }
 }

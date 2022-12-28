@@ -17,7 +17,7 @@ namespace Demo.Repository.Pattern.Data
      * - The repository is an abstraction to reduce complexity and make the rest of
      * the code persistent ignorant.
      * - Helps us write unit tests (instead of integration tests)
-     * - Normally repository should return domain objects
+     * - Generally repository should return domain objects
      * - We don't want to expose the data access layer (DAL)
      * - We want to prevent 
      *      - Arbitrary db queries in code
@@ -53,8 +53,8 @@ namespace Demo.Repository.Pattern.Data
             Expression<Func<TEntity, bool>> predicate,
             params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            var query = this.GetAllIncluding(includeProperties);
-            var results = await query.Where(predicate).ToListAsync();
+            IQueryable<TEntity> query = this.GetAllIncluding(includeProperties);
+            List<TEntity> results = await query.Where(predicate).ToListAsync();
             return results;
         }
 
@@ -64,7 +64,7 @@ namespace Demo.Repository.Pattern.Data
         {
             // TODO: Add pagination (skip/take) support
 
-            var query = this.GetAllIncluding(includeProperties);
+            IQueryable<TEntity> query = this.GetAllIncluding(includeProperties);
             return await query.Where(predicate).ProjectTo<T1>(this.mapper.ConfigurationProvider).ToListAsync();
         }
 
@@ -83,7 +83,7 @@ namespace Demo.Repository.Pattern.Data
 
         public virtual async Task Add(TEntity entity)
         {
-            await this.DbSet.AddAsync(entity);
+            _ = await this.DbSet.AddAsync(entity);
         }
 
         public virtual void Update(TEntity entity)
@@ -102,18 +102,18 @@ namespace Demo.Repository.Pattern.Data
             // this.DbSet.Update(entity);
 
             // Are we tracking the entity or not?
-            var existingEntity = this.DbSet.Find(entity.Id);
+            TEntity? existingEntity = this.DbSet.Find(entity.Id);
 
             if (existingEntity != null)
             {
-                var existingEntityEntry = this.DbSet.Entry(existingEntity);
+                EntityEntry<TEntity> existingEntityEntry = this.DbSet.Entry(existingEntity);
                 existingEntityEntry.CurrentValues.SetValues(entity);
             }
         }
 
         public virtual void Delete(TEntity entity)
         {
-            this.DbSet.Remove(entity);
+            _ = this.DbSet.Remove(entity);
         }
 
         public virtual async Task<int> SaveChangesAsync()
@@ -142,7 +142,7 @@ namespace Demo.Repository.Pattern.Data
 
         private IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            var queryable = this.DbSet.AsNoTracking();
+            IQueryable<TEntity> queryable = this.DbSet.AsNoTracking();
             return includeProperties.Aggregate(queryable, (current, includeProperty) => current.Include(includeProperty));
         }
 

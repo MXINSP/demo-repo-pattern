@@ -16,13 +16,13 @@ namespace Demo.Repository.Pattern.Specifications
 
         public override Expression<Func<T, bool>> ToExpression()
         {
-            var leftExpression = this._left.ToExpression();
-            var rightExpression = this._right.ToExpression();
+            Expression<Func<T, bool>> leftExpression = this._left.ToExpression();
+            Expression<Func<T, bool>> rightExpression = this._right.ToExpression();
 
-            var paramExpression = Expression.Parameter(typeof(T));
-            var expressionBody = Expression.AndAlso(leftExpression.Body, rightExpression.Body);
+            ParameterExpression paramExpression = Expression.Parameter(typeof(T));
+            BinaryExpression? expressionBody = Expression.AndAlso(leftExpression.Body, rightExpression.Body);
             expressionBody = (BinaryExpression)new ParameterReplacer(paramExpression).Visit(expressionBody);
-            var finalExpression = Expression.Lambda<Func<T, bool>>(expressionBody ?? throw new InvalidOperationException($"{nameof(expressionBody)} cannot be null."), paramExpression);
+            Expression<Func<T, bool>> finalExpression = Expression.Lambda<Func<T, bool>>(expressionBody ?? throw new InvalidOperationException($"{nameof(expressionBody)} cannot be null."), paramExpression);
 
             return finalExpression;
         }

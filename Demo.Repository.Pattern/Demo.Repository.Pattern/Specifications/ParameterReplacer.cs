@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace Demo.Repository.Pattern.Specifications
 {
@@ -17,6 +12,8 @@ namespace Demo.Repository.Pattern.Specifications
         }
 
         protected override Expression VisitParameter(ParameterExpression node)
-            => base.VisitParameter(this.parameter);
+        {
+            return base.VisitParameter(this.parameter);
+        }
     }
 }

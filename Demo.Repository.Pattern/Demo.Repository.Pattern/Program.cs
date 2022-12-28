@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Demo.Repository.Pattern.Data;
 using Demo.Repository.Pattern.Domain;
-using Demo.Repository.Pattern.DTO;
 using Demo.Repository.Pattern.Profiles;
 using Demo.Repository.Pattern.Specifications;
 using Microsoft.EntityFrameworkCore;
@@ -10,40 +8,36 @@ using Microsoft.Extensions.Configuration;
 
 namespace Demo.Repository.Pattern
 {
-    internal class Program
+    internal static class Program
     {
-        private static readonly IConfiguration Configuration;
-        private static readonly IMapper Mapper;
+        private static readonly IConfiguration Configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        private static readonly IMapper Mapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<ProductProfile>();
+            // cfg.AddMaps(typeof(Program));
+        }).CreateMapper();
 
         static Program()
         {
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            Mapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<ProductProfile>();
-                // cfg.AddMaps(typeof(Program));
-
-            }).CreateMapper();
-
             Mapper.ConfigurationProvider.AssertConfigurationIsValid();
         }
 
-        static async Task Main(string[] args)
+        public static async Task Main()
         {
-            var connectionString = Configuration.GetConnectionString("DB_CONNECTION");
+            string? connectionString = Configuration.GetConnectionString("DB_CONNECTION");
 
-            var options = new DbContextOptionsBuilder<ProductDbContext>()
+            DbContextOptions<ProductDbContext> options = new DbContextOptionsBuilder<ProductDbContext>()
                 // .UseSqlServer(connectionString)
                 .LogTo(m => Print(m, ConsoleColor.Yellow), Microsoft.Extensions.Logging.LogLevel.Information)
                 .UseNpgsql(connectionString, builder => builder.EnableRetryOnFailure())
                 //.EnableSensitiveDataLogging()
                 .Options;
 
-            await using var db = new ProductDbContext(options);
+            await using ProductDbContext db = new(options);
             // await db.Database.EnsureCreatedAsync();
 
             /*var p = new Product { 
@@ -62,15 +56,18 @@ namespace Demo.Repository.Pattern
             productDtos.ForEach(p => Print(p.Name)); */
 
             // Option 3:
-            using var repo = new GenericRepository<Product, ProductDbContext>(db, Mapper);
-            var productDtos = await repo.FindAsync<ProductDto>(p => p.Name.Contains("One"));
+            using GenericRepository<Product, ProductDbContext> repo = new(db, Mapper);
+            //var productDtos = await repo.FindAsync<ProductDto>(p => p.Name.Contains("One"), p => p.m);
             //productDtos.ForEach(p => Print(p.Name));
 
-            var newProducts = new NewProductSpec();
-            var expProducts = new ExpensiveProductSpec();
+            NewProductSpec newProducts = new();
+            ExpensiveProductSpec expProducts = new();
+
+            // BaseSpecification<Product> combinedSpec = newProducts.And(expProducts);
 
             //var products = await repo.FindAsync(newProducts);
-            var products = await repo.FindAsync(newProducts.And(expProducts));
+            List<Product> products = await repo.FindAsync(newProducts);
+            Console.WriteLine(products.Count);
             products.ForEach(p => Print(p.Name));
         }
 

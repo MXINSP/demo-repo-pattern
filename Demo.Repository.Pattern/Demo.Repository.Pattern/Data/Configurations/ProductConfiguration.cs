@@ -13,8 +13,8 @@ namespace Demo.Repository.Pattern.Data.Configurations
     {
         public override void Configure(EntityTypeBuilder<Product> builder)
         {
-            builder.Property(p => p.UnitPrice).HasDefaultValue(0.01);
-            
+            ArgumentNullException.ThrowIfNull(builder);
+            builder.Property(p => p.UnitPrice).HasDefaultValue(0.01d);
             base.Configure(builder);
         }
     }
