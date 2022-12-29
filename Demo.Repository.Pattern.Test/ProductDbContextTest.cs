@@ -1,4 +1,3 @@
-using AutoMapper;
 using Demo.Repository.Pattern.Data;
 using Demo.Repository.Pattern.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +7,6 @@ namespace Demo.Repository.Pattern.Test
     public class ProductDbContextTest : IDisposable
     {
         private readonly ProductDbContext context;
-
-        private readonly IMapper mapper;
 
         private bool disposed;
 
@@ -29,17 +26,10 @@ namespace Demo.Repository.Pattern.Test
             //this.context.Products.AddRangeAsync(testProductData);
 
             //this.context.SaveChanges();
-
-            var mapperConfig = new MapperConfiguration(
-                c =>
-                {
-                });
-
-            this.mapper = mapperConfig.CreateMapper();
         }
 
         [Fact]
-        public async Task Should_Return_Product_By_ID()
+        public async Task Should_Return_Product_By_Id()
         {
             // ARRANGE
             List<Product> testProductData = new() {
